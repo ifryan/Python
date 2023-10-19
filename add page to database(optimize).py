@@ -47,3 +47,10 @@ response = update_page_info(page_info)
 
 # 打印响应
 print("Update Response:", response)
+
+# getinfo 函数得到的是 json 样式的字符串，需要用 json.loads 读成 json 文件
+# 读成 json 文件才可以用数组下标的形式读数据
+# update_pagebody =json.dumps(pagebody,indent=4)
+# 这个方法可以把 json 变回字符串，indent=4 表示缩进用的空格数
+# 修改 json 中的值，{}大括号包裹的需要用["属性名"]来索引，[]中括号包裹的需要用[下标]来索引
+print("Click to Visit:", json.loads(response)["url"])
