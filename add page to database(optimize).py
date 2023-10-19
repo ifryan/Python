@@ -38,6 +38,7 @@ page_info = get_page_info(notion_url)
 # 输入要更改的标题
 new_title = input("Enter the new title: ")
 
+print(json.dumps(page_info, indent=4))
 # 更新页面信息
 page_info["properties"]["Name"]["title"][0]["text"]["content"] = new_title
 page_info["properties"]["Name"]["title"][0]["plain_text"] = new_title
@@ -54,3 +55,5 @@ print("Update Response:", response)
 # 这个方法可以把 json 变回字符串，indent=4 表示缩进用的空格数
 # 修改 json 中的值，{}大括号包裹的需要用["属性名"]来索引，[]中括号包裹的需要用[下标]来索引
 print("Click to Visit:", json.loads(response)["url"])
+
+
