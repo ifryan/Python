@@ -33,13 +33,8 @@ response = requests.get(url, headers=headers)
 # 解析 JSON 响应文本
 data = json.loads(response.text)
 
-update_data = data.get("syncTaskBean", {}).get("update", [])
-
-# 初始化空字典来存储数据
-titles = {}
-content = {}
-startDates = {}
-dueDates = {}
+# Extract new data from the response
+new_data = data.get("syncTaskBean", {}).get("update", [])
 
 def add_tab_to_lines(input_text):
     lines = input_text.split('\n')  # 按换行符分割文本成行
@@ -59,54 +54,31 @@ def convert_time_format(type,time):
       dt = datetime.datetime.fromisoformat(time_str.replace('Z', '+00:00'))
       return f"{emoji} {dt.year}-{dt.month}-{dt.day}"    
 
-# 循环遍历更新数据
-for i, task in enumerate(update_data):
-    titles[i] = task.get("title")
-    startDates[i] = convert_time_format("start",task.get("startDate"))
-    dueDates[i] = convert_time_format("due",task.get("dueDate"))
-    content[i] = add_tab_to_lines(str(task.get("content")))
+try:
+    with open('response_json', 'r', encoding="utf-8") as f:
+        old_data = json.load(f)
+except FileNotFoundError:
+    old_data = {"syncTaskBean": {"update": []}}
 
+num = 0
+# Find deleted items by comparing old and new data
+# print(old_data["syncTaskBean"]["update"][0]["content"])
+deleted_items = [item for item in old_data["syncTaskBean"]["update"] if item not in new_data]
 
+# If there are deleted items, append them to a file
+if deleted_items:
+    with open('Done_list', 'a', encoding="utf-8") as f:
+        for item in deleted_items:
+            num += 1
+            if "content" not in item:
+                item["content"]=""        
+            f.write(f'- [x] {item["title"]} #task {convert_time_format("start", item["startDate"])} {convert_time_format("due", item["dueDate"])}\n {add_tab_to_lines(item["content"])} \n')
 
-output_todo_path = "Todo_list"
-output_done_path = "Done_list"
-temp_path = "Temp"
-# output_todo_path = "/Users/ryan/Documents/Ryan's Note/Todo_list.md"
-# output_done_path = "/Users/ryan/Documents/Ryan's Note/Done_list.md"
+# Update the old data with the new data
+old_data["syncTaskBean"]["update"] = new_data
 
-# 创建一个文本文件来存储任务列表
-with open(output_todo_path, 'w') as file:
-    # 写入任务列表
-    for i in range(len(titles)):
-        task_info = f"- [ ] {titles[i]} #task {startDates[i]} {dueDates[i]}\n{content[i]}\n\n"
-        file.write(task_info)
+# Save the updated data to the file
+with open('response_json', 'w', encoding="utf-8") as f:
+    json.dump(old_data, f, ensure_ascii=False)
 
-done = 0
-
-# 读取文件A
-with open("compare", 'r') as file:
-    compare = file.readlines()
-
-# 查找缺失的任务项并将它们保存到文件B
-with open(output_done_path, 'a') as file_B:
-    for line in compare:
-        # 检查是否在新任务列表中找到了对应任务
-        found = False
-        for i in range(len(titles)):
-            if titles[i] in line:
-                found = True
-                break
-        # 如果没有找到，表示任务被删除，将其保存到文件B
-        if not found:
-            done += 1
-            file_B.write(f"- [x] {titles[i]} #task {startDates[i]} {dueDates[i]}\n{content[i]}\n\n")
-
-with open("compare", 'w') as file:
-    # 写入任务列表
-    for i in range(len(titles)):
-        task_info = f"{titles[i]}\n"
-        file.write(task_info)
-
-# 输出成功消息
-print( str(len(titles)) + " 条任务已写入 todo \n" + str(done) + " 条任务已写入 done")
-
+print(str(len(new_data)) + " to do created\n" + str(num) + " done created")

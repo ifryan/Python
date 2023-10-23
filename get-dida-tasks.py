@@ -29,11 +29,12 @@ headers = {
 }
 
 response = requests.get(url, headers=headers)
-
+output_file_path = "response.txt"
+output_json_path = "response_json.txt"
 # print(response.text)
 
 # 写入文件
-with open('response.txt', 'w') as f:
+with open(output_json_path, 'w',encoding="utf-8") as f:
   f.write(response.text)
   
 # 解析 JSON 响应文本
@@ -72,13 +73,13 @@ for i, task in enumerate(update_data):
     dueDates[i] = convert_time_format("due",task.get("dueDate"))
     content[i] = add_tab_to_lines(str(task.get("content")))
 
-output_file_path = "/Users/ryan/Documents/Ryan's Note/task_list.md"
+
 
 # 创建一个文本文件来存储任务列表
-with open(output_file_path, 'w') as file:
+with open(output_file_path, 'w', encoding="utf-8") as file:
     # 写入任务列表
     for i in range(len(titles)):
-        task_info = f"- [ ] {titles[i]} #task {startDates[i]} {dueDates[i]}\n{content[i]}\n\n"
+        task_info = f"- [ ] {titles[i]} #task {startDates[i]} {dueDates[i]}\n{content[i]}\n"
         file.write(task_info)
 
 # 输出成功消息
