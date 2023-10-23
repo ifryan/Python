@@ -30,12 +30,6 @@ headers = {
 
 response = requests.get(url, headers=headers)
 
-# print(response.text)
-
-# 写入文件
-with open('response.txt', 'w') as f:
-  f.write(response.text)
-  
 # 解析 JSON 响应文本
 data = json.loads(response.text)
 
@@ -72,14 +66,47 @@ for i, task in enumerate(update_data):
     dueDates[i] = convert_time_format("due",task.get("dueDate"))
     content[i] = add_tab_to_lines(str(task.get("content")))
 
-output_file_path = "/Users/ryan/Documents/Ryan's Note/task_list.md"
+
+
+output_todo_path = "Todo_list"
+output_done_path = "Done_list"
+temp_path = "Temp"
+# output_todo_path = "/Users/ryan/Documents/Ryan's Note/Todo_list.md"
+# output_done_path = "/Users/ryan/Documents/Ryan's Note/Done_list.md"
 
 # 创建一个文本文件来存储任务列表
-with open(output_file_path, 'w') as file:
+with open(output_todo_path, 'w') as file:
     # 写入任务列表
     for i in range(len(titles)):
         task_info = f"- [ ] {titles[i]} #task {startDates[i]} {dueDates[i]}\n{content[i]}\n\n"
         file.write(task_info)
 
+done = 0
+
+# 读取文件A
+with open("compare", 'r') as file:
+    compare = file.readlines()
+
+# 查找缺失的任务项并将它们保存到文件B
+with open(output_done_path, 'a') as file_B:
+    for line in compare:
+        # 检查是否在新任务列表中找到了对应任务
+        found = False
+        for i in range(len(titles)):
+            if titles[i] in line:
+                found = True
+                break
+        # 如果没有找到，表示任务被删除，将其保存到文件B
+        if not found:
+            done += 1
+            file_B.write(f"- [x] {titles[i]} #task {startDates[i]} {dueDates[i]}\n{content[i]}\n\n")
+
+with open("compare", 'w') as file:
+    # 写入任务列表
+    for i in range(len(titles)):
+        task_info = f"{titles[i]}\n"
+        file.write(task_info)
+
 # 输出成功消息
-print( str(len(titles)) + " 条任务已写入 task_list.txt 文件")
+print( str(len(titles)) + " 条任务已写入 todo \n" + str(done) + " 条任务已写入 done")
+
