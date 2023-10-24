@@ -41,8 +41,8 @@ def my_task():
             emoji = f"📅"
         else:
             emoji = f"🛫"
-            if time:
-                time_str = str(time)
+        
+        time_str = str(time)
 
         if time_str == "None":
             return None

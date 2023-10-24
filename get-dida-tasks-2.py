@@ -41,13 +41,13 @@ def my_task():
         return indented_text
 
     def convert_time_format(type, time):
-        time_str = "None"  # 添加默认值
+        # time_str = "None"  # 添加默认值
         if type == "start":
             emoji = f"📅"
         else:
             emoji = f"🛫"
-            if time:
-                time_str = str(time)
+
+        time_str = str(time)
 
         if time_str == "None":
             return None
@@ -112,7 +112,7 @@ def my_task():
 scheduler = BlockingScheduler()
 
 # 创建一个 Cron 触发器，表示9 点到 18 点，每30分钟执行一次
-trigger = CronTrigger(second='0', minute='*/30', hour='8-19', timezone='Asia/Shanghai')
+trigger = CronTrigger(second='0', minute='*/1', hour='8-19', timezone='Asia/Shanghai')
 
 # 添加任务
 scheduler.add_job(my_task, trigger=trigger)
