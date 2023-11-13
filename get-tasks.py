@@ -36,7 +36,7 @@ def my_task():
         return indented_text
 
     def convert_time_format(type, time):
-        time_str = "None"  # 添加默认值
+        # time_str = "None"  # 添加默认值
         if type == "start":
             emoji = f"📅"
         else:
