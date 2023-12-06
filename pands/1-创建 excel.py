@@ -8,4 +8,10 @@ df = pd.DataFrame({
 df = df.set_index('ID')
 print(df)
 df.to_csv('/Users/ryan/Documents/Python/output.csv')
+
+# ID	Name
+# 1	Tim
+# 2	Victor
+# 3	Nick
+
 print('done!')

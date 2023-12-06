@@ -28,4 +28,4 @@ def others(item):
     rowIndex = findItem(item)
     return(csv[csv.columns[4]][rowIndex])
 
-print (month('千岛湖房租'))
+
